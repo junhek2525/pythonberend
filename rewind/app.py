@@ -60,7 +60,24 @@ def unfollow():
     else:
         user['follow'] = []
         return jsonify(user)
+    
+@app.route('/timeline/<int:userId>', methods=['POST'])
 
+def timeline(userId):
+    if userId not in app.users:
+     return '사용자가 존제하지 않습니다', 400
+    if app.users[userId].get('follow'):
+     FollowList = set(app.users[userId]['follow'])
+    else:
+        FollowList = set()
+    FollowList.add(userId)
+    timeline = [msg for msg in app.posts if msg['userId'] in FollowList]
 
+    
+    return jsonify({
+        'userId' : userId,
+        'timeline' : timeline
+    })
+    
 if __name__ == '__main__':
     app.run()
